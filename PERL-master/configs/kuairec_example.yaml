@@ -1,0 +1,65 @@
+# ==========================================================================
+# PERL — KuaiRec_example (tiny 40-video subset) config for an end-to-end smoke run.
+# Identical model/method to configs/kuairec.yaml; only paths and run-size differ.
+# ==========================================================================
+dataset: kuairec_example
+seed: 42
+
+paths:
+  processed_dir: processed/kuairec_example
+  checkpoint_dir: checkpoints/kuairec_example
+  timesfm_src: third_party
+  timesfm_model_dir: weights/timesfm-2.5-200m-pytorch
+
+model:
+  embed_dim: 128
+  K: 20
+  w: 5
+  K_P: 4
+  tau_con: 0.1
+  tau_M: 0.1
+  tau_P: 0.1
+  rho_max: 64
+  d_x: 16
+  user_hist_len: 50
+
+path_a:
+  encoder: lora_tsfm
+  patch_len: 32
+  hidden_size: 1280
+  lora_r: 8
+  lora_alpha: 16
+  lora_dropout: 0.1
+  lora_target_modules: [qkv_proj]
+  max_prefix_len: 64
+  tsfm_microbatch: 512
+
+loss:
+  lambda_con: 0.1
+  lambda_unc: 0.1
+  lambda_reg: 1.0e-5
+
+optim:
+  lr: 1.0e-3
+  batch_size: 16          # tiny subset
+  max_epochs: 2
+  early_stop_patience: 2
+  grad_clip: 1.0
+  num_workers: 2
+
+eval:
+  num_candidate_negatives: 20   # capped automatically to catalog size
+  topk: 10
+  stages: {G1: [0, 3], G2: [4, 7], G3: [8, 14], G4: [15, 1000000000]}
+
+ablation:
+  no_lifecycle_align: false          # shorthand for align_strategy: whole_trajectory
+  no_population: false
+  no_temporal: false
+  no_collaborative: false
+  no_uncertainty: false
+  no_progressive: false              # shorthand for fusion_strategy: concat
+  no_cecl: false
+  align_strategy: lifecycle_causal   # whole_trajectory | calendar | symmetric | lifecycle_causal
+  population_prior: prototypes       # prototypes | single_mean
+  fusion_strategy: progressive       # mean | concat | reliability | progressive

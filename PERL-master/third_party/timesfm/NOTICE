@@ -1,0 +1,8 @@
+Vendored copy of the TimesFM 2.5 Python package from
+https://github.com/google-research/timesfm (Copyright 2025 Google LLC), licensed under the
+Apache License, Version 2.0 (see LICENSE in this directory).
+
+Only the package source is included here so that `import timesfm` resolves without a separate
+install. No functional changes were made. Pretrained weights are distributed separately by
+Google at https://huggingface.co/google/timesfm-2.5-200m-pytorch and must be downloaded by the
+user (see the repository README).
